@@ -14,7 +14,7 @@ load_dotenv(find_dotenv())
 SECRET_KEY = os.getenv('Secret_django_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -89,11 +89,11 @@ WSGI_APPLICATION = 'AvtoSmmSite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'AvtoSmm',
-        'USER': 'postgres',
-        'PASSWORD': '5573',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('db_name'),
+        'USER': os.getenv('db_user'),
+        'PASSWORD': os.getenv('db_password'),
+        'HOST': os.getenv('db_host'),
+        'PORT': os.getenv('db_port'),
         'ATOMIC_REQUESTS' : True,
     }
 }

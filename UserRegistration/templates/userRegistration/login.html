@@ -1,0 +1,21 @@
+{% extends 'userRegistration/baseRegistration.html' %}
+{% load static %}
+
+{% block title %}Авторизация{% endblock %}
+
+{% block content %}
+
+<form method="post">
+  {% csrf_token %}
+  <div class="col">
+    <div class="row my-3">{{ form.username }}</div>
+    <div class="row">{{ form.password }}</div>
+    <div class="my-1"><a href="#">Забыл пароль?</a></div>
+  </div>
+  <div class="row">
+    <div class="col btn btn-secondary"><a href="{% url 'UserRegistration:registration' %}">Регистрация</a></div>
+    <div class="col"><button class="submit btn btn-primary">Войти</button></div>
+  </div>
+
+</form>
+{% endblock %}

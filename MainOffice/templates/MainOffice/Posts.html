@@ -1,0 +1,139 @@
+{% extends 'MainOffice/base.html' %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+
+{% block extrahead %}
+  <script src="{% static 'js/jquery-3.6.4.min.js' %}"></script>
+{% endblock%}
+
+{% block title %}
+{{ title }}
+{% endblock%}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center my-5">
+  <form method="get" class=" mx-sm-3 w-50">
+    {%csrf_token%}
+    <div class="row">
+      <div class="col">{{ GenerationTextform.theme }}</div>
+      <div class="col-1">
+        <button class="submit btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
+            <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+
+{% if theme %}
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ changeGroup.media }}
+      <div class="d-flex justify-content-center align-items-center">
+        <div class="row">
+          <div class="col">
+            <div class="mx-auto d-flex border border-primary h-auto" style="width: 500px; background-color: #222222;">
+              <div class="col p-1">
+                <div class="mx-auto row py-2">
+                  <div class="col-2">
+                      <img style="width: 40px; height: 40px; border-radius: 50%;" id="image-preview" src="{{ image_url }}" alt="Preview">
+                  </div>
+
+                  <div class="col-8">
+                    <div class="row">
+                      {{ changeGroup.change  }}
+                    </div>
+
+                    <div class="row" style="font-size: 13px; color:#5d5d5d;">
+                      {{ changeGroup.dateAndTime }}
+                    </div>
+                  </div>
+                  <div class="col-2">
+                     <svg width="40" height="40" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g id="more_horizontal_24__Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="more_horizontal_24__more_horizontal_24"><path id="more_horizontal_24__Bounds" d="M24 0H0v24h24z"></path><path d="M18 10a2 2 0 0 1 2 2 2 2 0 0 1-2 2 2 2 0 0 1-2-2c0-1.1.9-2 2-2Zm-6 4a2 2 0 0 1-2-2c0-1.1.9-2 2-2a2 2 0 0 1 2 2 2 2 0 0 1-2 2Zm-6 0a2 2 0 0 1-2-2c0-1.1.9-2 2-2a2 2 0 0 1 2 2 2 2 0 0 1-2 2Z" id="more_horizontal_24__Mask" fill="currentColor"></path></g></g></svg>
+                  </div>
+                </div>
+
+                <div class="text">
+                  <div class="mx-auto row px-2">
+                    {{ changeGroup.text }}
+                  </div>
+                </div>
+
+                <div class="row mx-auto my-auto p-2">
+                    <img id="preview" src="" alt="your image" >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-2 d-flex justify-content-center align-items-center">
+            <div class="row">
+              {{ changeGroup.photo }}
+              <button class="submit btn btn-success my-2">
+                Отправить
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+  </form>
+{% endif %}
+
+<script>
+  function previewImage(event) {
+    var reader = new FileReader();
+    reader.onload = function(){
+      var output = document.getElementById('preview');
+      output.src = reader.result;
+      output.style.display = "block";
+    }
+    reader.readAsDataURL(event.target.files[0]);
+  }
+  document.getElementById("id_photo").addEventListener("change", previewImage);
+</script>
+
+<script>
+  $(document).ready(function() {
+    var select = $('#change_id');
+    var imagePreview = $('#image-preview');
+    var url = 'get-image/';
+
+    // Обработчик события "изменение выбора"
+    select.on('change', function() {
+        var option = $(this).find('option:selected');
+        var pk = option.val();
+        if (pk) {
+            $.ajax({
+                url: url + pk + '/',
+                success: function(response) {
+                    imagePreview.attr('src', response.image_url);
+                }
+            });
+        } else {
+            imagePreview.attr('src', '');
+        }
+    });
+});
+
+</script>
+<script>
+function autoResizeTextarea(element) {
+  element.style.height = 'auto';
+  element.style.height = (element.scrollHeight) + 'px';
+}
+
+let textareas = document.querySelectorAll('textarea');
+textareas.forEach(textarea => {
+  autoResizeTextarea(textarea);
+  textarea.addEventListener('input', () => {
+    autoResizeTextarea(textarea);
+  });
+});
+</script>
+{% endblock%}

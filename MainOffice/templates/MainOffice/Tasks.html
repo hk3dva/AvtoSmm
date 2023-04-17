@@ -1,0 +1,40 @@
+{% extends 'MainOffice/base.html' %}
+
+{% load static %}
+
+{% block extrahead %}
+
+{% endblock%}
+
+{% block title %}
+{{ title }}
+{% endblock%}
+
+{% block content %}
+<div>
+    <div class="row">
+        <div class="col">1 карточка с информацией</div>
+        <div class="col">2 карточка с информацией</div>
+    </div>
+    <div>Список заданий</div>
+        {% for task in tasks %}
+        <div class="border mt-2">
+            <div class="row">
+                <div class="col-2">
+                    <img src="{{task.сustomer.photo.url}}" class="img-fluid rounded-circle" width="64" height="64">
+                </div>
+                <div class="col">
+                    <div class="row justify-content-start align-items-start">{{ task.title }}</div>
+                    <div class="row justify-content-start align-items-center">{{ task.text }}</div>
+                    <div class="row justify-content-end align-items-end" style="max-width: 100%;">Крайний срок: {{ task.date_end }}</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    В Пн - Пуш уведомления<br>
+    В Вт - Рассылки на среду<br>
+    В Чт - Рассылки на пятницу<br>
+    В Пт - Рассылки на понедельник<br>
+</div>
+{% endblock%}

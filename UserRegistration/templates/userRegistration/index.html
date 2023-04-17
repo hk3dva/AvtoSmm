@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}"/>
+
+    <title>SMM Manager</title>
+</head>
+<body>
+
+    <div style="background-image: url({% static 'img/back_main.jpg' %});background-repeat: no-repeat; background-size: cover; height: 500px;">
+        <div class=''>
+            <div class="container p-5">
+                <div class="row fs-2 d-flex justify-content-center align-items-center mt-5 text-white">Рабочее пространство для SMM-менеджера</div>
+                <div class="row d-flex justify-content-center align-items-center text-white p-5 fs-5">Добро пожаловать в сервис для менеджеров социальных сетей. На этом сайте собраны ресурсы для улучшения вашего рабочего процесса, сотрудничества с вашей командой и оптимизации вашего влияния на платформы социальных медиа. Давайте погрузимся!</div>
+                <div class="m-2">
+                    <div class="btn btn-primary ms-4">
+                        <a href="{% url 'UserRegistration:login' %}">Приступить к работе</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="background: linear-gradient(to right, #0c0c39, #2727bf, #e42996, #0d0a2d, #24619a);">
+        <div class="container p-5">
+            <div class="border rounded-3 p-2" style="background: linear-gradient(to right, #1d2226, #4a0947, #0d0932);">
+                <div class="p-5">
+                    <div class="fs-2 p-3 text-white">Кто такое менеджер социальных сетей?</div>
+                    <div class="fs-6 p-3 text-white">Менеджер социальных сетей - это профессионал, который управляет и реализует стратегии социальных сетей для вашего бренда или бизнеса. Их работа заключается в создании и публикации контента, взаимодействии с аудиторией, расширении охвата и анализе эффективности цифровых технологий.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="background: linear-gradient(to right, #0d0a34, #150f61, #4a093e, #0d0932, #1e2361);">
+        <div class="container">
+            <div>
+                <div class="fs-1 text-white p-5">
+                    Основные инструменты SMM
+                </div>
+
+                <div class="row p-5 justify-content-center">
+                    <div class="col-md-3">
+                        <div class="row text-white fs-5 justify-content-center text-center pt-1">Платформа<br>планирования</div>
+                        <div class="row text-white mt-4 justify-content-center p-3">Наша Платформа планирования предоставляет все необходимые инструменты, чтобы помочь вам организовать свой рабочий день и управлять своими проектами. Вы можете создавать задачи, устанавливать приоритеты, определять дедлайны и отслеживать свой прогресс. Это простой и интуитивно понятный инструмент, который поможет вам стать более продуктивным и управлять своим временем.</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="row text-white fs-5 justify-content-center text-center">Программное обеспечение<br>для<br>графического дизайна</div>
+                        <div class="row text-white mt-4 justify-content-center p-3">Наше Программное обеспечение для графического дизайна предоставляет широкий выбор инструментов для создания высококачественных графических элементов. Это инструмент, который поможет вам создавать логотипы, баннеры, иллюстрации и другие графические элементы. Вы можете создавать визуальные материалы, которые подчеркнут уникальность вашего бренда и привлекут внимание вашей аудитории.</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="row text-white fs-5 justify-content-center text-center">Инструменты<br>для<br>исследования хэштегов</div>
+                        <div class="row text-white mt-4 justify-content-center p-3">Наш Инструменты для исследования хэштегов поможет вам оптимизировать свою стратегию социальных сетей, чтобы вы могли увеличить свой охват и привлечь больше подписчиков. Вы можете исследовать популярные хэштеги, которые помогут вашему контенту быть замеченным в социальных сетях.</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="row text-white fs-5 justify-content-center text-center">Инструмент<br>для<br>курирования контента</div>
+                        <div class="row text-white mt-4 justify-content-center p-3">Если вы хотите улучшить свою стратегию социальных сетей, наш Инструмент для курирования контента поможет вам легко находить и делиться интересным контентом в социальных сетях. Это инструмент, который поможет вам управлять своими социальными сетями, находить новых подписчиков и увеличивать вашу онлайн-видимость.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,99 @@
+a {
+  text-decoration: none;
+  color: inherit;
+}
+.nav-link-text {
+  user-select: none;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+table th,
+table td {
+  padding: 8px;
+  border: 1px solid #ccc;
+}
+
+table th {
+  background-color: #eee;
+}
+
+table td.today {
+  background-color: #ffffcc;
+}
+
+table td.events {
+  background-color: #ccffcc;
+}
+
+
+.message {
+  max-width: 70%;
+  margin: 20px auto;
+  background-color: #F6F6F6;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  padding: 10px;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.message-sender {
+  color: #0088cc;
+  justify-content : start;
+}
+
+.message-time {
+  color: #999;
+  justify-content : flex-end;
+}
+
+.message-body {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.my_message{
+    margin-right: 10px;
+}
+
+.his_message{
+    margin-left: 10px;
+}
+
+.chat-input {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.chat-input input[type="text"] {
+  flex: 1;
+  border: none;
+  outline: none;
+  margin-right: 10px;
+}
+
+.chat-input button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.chat-input button:hover {
+  background-color: #0062cc;
+}

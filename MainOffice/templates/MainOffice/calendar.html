@@ -1,0 +1,35 @@
+{% extends 'MainOffice/base.html' %}
+
+{% load static %}
+
+{% block extrahead %}
+
+{% endblock%}
+
+{% block title %}
+{{ title }}
+{% endblock%}
+
+{% block content %}
+<div class="col">
+  <div class="row justify-content-center fs-4">
+    {{ today }}
+  </div>
+  <div class="row fs-5">
+    <div>Твои Задания на {{ today }} </div>
+    <div class="col">
+      <ul class="nav flex-column">
+        <li>1. Помыть кота</li>
+        <li>2. Покормить кота</li>
+        <li>3. Погладить кота</li>
+        <li>4. Покормить кота</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row fs-5">
+    <div class="d-flex justify-content-center my-2">Контент план</div>
+    {{ calendar|safe }}
+  </div>
+</div>
+{% endblock%}

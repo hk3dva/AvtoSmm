@@ -14,7 +14,7 @@ load_dotenv(find_dotenv())
 SECRET_KEY = os.getenv('Secret_django_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 

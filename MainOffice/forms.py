@@ -4,6 +4,15 @@ from .models import *
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
 
+class ProfileForm(ModelForm):
+    class Meta:
+        model = Account
+        fields = ['first_name', 'last_name', 'email', 'photo']
+        widgets = {
+            'photo': forms.FileInput(attrs={'id': 'photo-input'})
+        }
+
+
 class PostGenerationTextForm(Form):
     theme = forms.CharField(label='theme',
                             widget=forms.TextInput(attrs={'class': 'form-control',
@@ -24,12 +33,11 @@ class GroupAdd(ModelForm):
         }
 
 
-class changeGroupForm(forms.Form):
+class ChangeGroupForm(forms.Form):
     change = forms.ModelChoiceField(queryset=GroupForLead.objects.all(),
                                     to_field_name='pk',
 
                                     empty_label=None,
-                                    initial=GroupForLead.objects.all()[0],
                                     widget=forms.Select(attrs={'class': 'text-white',
                                                                'id': 'change_id',
                                                                'style': 'background-color: transparent;'
@@ -65,6 +73,15 @@ class changeGroupForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.current_photo = kwargs.pop('current_photo', None)
         super().__init__(*args, **kwargs)
+
+
+class TextForm(forms.Form):
+    text = forms.CharField(widget=forms.Textarea(attrs={'style':
+                                                                 'font-size: 13px;'
+                                                                 'line-height: 1.462;',
+                                                        'class': 'form-control',
+                                                        'rows': "1",
+                                                        }))
 
 
 class WriteSms(ModelForm):

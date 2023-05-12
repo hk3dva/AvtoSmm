@@ -11,26 +11,27 @@
 {% endblock%}
 
 {% block content %}
-<div class="row">
-    <div class="col">
-        {% if userProfile.photo %}
-            <img src="{{ userProfile.photo.url }}" class="img-fluid rounded-circle" width="300" height="200">
-        {% else %}
-            <img src="{% static 'img/plugProfile.svg' %}" class="img-fluid rounded-circle" width="300" height="200">
-        {% endif %}
-
-    </div>
-    <div class="col">
-        <div class="row fs-1">{{ userProfile.last_name }}</div>
-        <div class="row fs-1">{{ userProfile.first_name }}</div>
-        <div class="row btn btn-primary"><a href="{% url 'MainOffice:profile_update' request.user.pk %}">Изменить</a></div>
-        <form method="post">
+<form method="post" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col">
+            {% if object.photo %}
+                <img id="photo-preview" src="{{ object.photo.url }}" class="img-fluid rounded-circle" width="300" height="200">
+            {% else %}
+                <img id="photo-preview" src="{% static 'img/plugProfile.svg' %}" class="img-fluid rounded-circle" width="300" height="200">
+            {% endif %}
+            {{ form.photo }}
+        </div>
+        <div class="col">
+            <div class="row fs-1">{{ form.last_name }}</div>
+            <div class="row fs-1">{{ form.first_name }}</div>
             {% csrf_token %}
-            {{ form.link }}
-          <button class="submit btn btn-success">Добавить группу</button>
-        </form>
+            <button type="submit">Сохранить</button>
+        </div>
     </div>
-</div>
+</form>
+
+
+
 <div class="row gx-5">
     <div class="col">
         <div class="fs-5">Выполненные задания</div>
@@ -65,4 +66,21 @@
         </ul>
     </div>
 </div>
+
+<script>
+   const photoInput = document.getElementById('photo-input');
+const photoPreview = document.getElementById('photo-preview');
+
+photoInput.addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = (event) => {
+    photoPreview.src = event.target.result;
+  };
+
+  reader.readAsDataURL(file);
+});
+
+</script>
 {% endblock%}

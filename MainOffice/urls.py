@@ -6,7 +6,10 @@ urlpatterns = [
     path('', index, name='base'),
     path('chat/', Chats.as_view(), name='chat'),
     path('chat/<str:room_name>/', Chats.as_view(), name='chat1'),
+
     path('profile/<int:pk>', Profile.as_view(), name='profile'),
+    path('profile/<int:pk>/update/', ProfileUpdateView.as_view(), name='profile_update'),
+
     path('calendar/', calendar, name='calendar'),
 
     path('posts/', Posts.as_view(), name='posts'),
@@ -14,6 +17,8 @@ urlpatterns = [
 
     path('tasks/', tasks, name='tasks'),
     path('statistics/', statistics, name='statistics'),
-    # path('chat/<int:pk>', name='chat'),
-    # path('profile/<int:pk>', profile, name=profile),
+
+    path('push-generator/', push_generator, name='push-generator'),
+    path('mailing-generator/', mailing_generator, name='mailing-generator'),
+
 ]

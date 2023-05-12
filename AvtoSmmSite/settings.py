@@ -89,12 +89,12 @@ WSGI_APPLICATION = 'AvtoSmmSite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'AvtoSmm',
-        'USER': 'postgres',
-        'PASSWORD': '5573',
-        'HOST': 'localhost',
-        'PORT': '5432',
-        'ATOMIC_REQUESTS' : True,
+        'NAME': os.getenv('db_name'),
+        'USER': os.getenv('db_user'),
+        'PASSWORD': os.getenv('db_password'),
+        'HOST': os.getenv('db_host'),
+        'PORT': os.getenv('db_port'),
+        'ATOMIC_REQUESTS': True,
     }
 }
 
@@ -123,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -135,7 +135,7 @@ USE_TZ = True
 
 
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = [(os.path.join(BASE_DIR,'static'))]
+STATICFILES_DIRS = [(os.path.join(BASE_DIR, 'static'))]
 STATIC_URL = '/static/'
 
 MEDIA_URL = '/image/'

@@ -13,16 +13,16 @@
 {% block content %}
 
 <div class="fs-4">Активность работы</div>
-<div class="row">
-    <div class="col">
+<div class="col">
+    <div class="row">
         <div class="row justify-content-center align-items-center fs-3">За день</div>
         <div class="row ">{{ day|safe }}</div>
     </div>
-    <div class="col">
+    <div class="row">
         <div class="row justify-content-center align-items-center fs-3">За неделю</div>
         <div class="row">{{ week|safe }}</div>
     </div>
-    <div class="col">
+    <div class="row">
         <div class="row justify-content-center align-items-center fs-3">За месяц</div>
         <div class="row">{{ month|safe }}</div>
     </div>

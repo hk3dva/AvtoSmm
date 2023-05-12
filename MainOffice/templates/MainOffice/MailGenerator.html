@@ -1,0 +1,66 @@
+{% extends 'MainOffice/base.html' %}
+
+{% load static %}
+
+{% block extrahead %}
+
+{% endblock%}
+
+{% block title %}
+{{ title }}
+{% endblock%}
+
+{% block content %}
+<form method="get">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col"><button class="submit btn btn-success my-2" value="1" name="day">Понедельник</button></div>
+        <div class="col"><button class="submit btn btn-success my-2" value="2" name="day">Вторник</button></div>
+        <div class="col"><button class="submit btn btn-success my-2" value="3" name="day">Среда</button></div>
+        <div class="col"><button class="submit btn btn-success my-2" value="4" name="day">Четверг</button></div>
+        <div class="col"><button class="submit btn btn-success my-2" value="5" name="day">Пятница</button></div>
+        <div class="col"><button class="submit btn btn-success my-2" value="6" name="day">Суббота</button></div>
+        <div class="col"><button class="submit btn btn-success my-2" value="7" name="day">Воскресенье</button></div>
+    </div>
+</form>
+
+<div class="d-flex justify-content-center align-items-center my-5">
+  <form method="post" class=" mx-sm-3 w-50">
+    {%csrf_token%}
+    <div class="row">
+      <div class="col">{{ TextInForm.text }}</div>
+      <div class="col-1">
+        <button class="submit btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
+            <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+{{ Error|safe   }}
+
+{% if show %}
+<div>
+    {{ TextOutForm.text }}
+</div>
+{% endif %}
+
+<script>
+function autoResizeTextarea(element) {
+  element.style.height = 'auto';
+  element.style.height = (element.scrollHeight) + 'px';
+}
+
+let textareas = document.querySelectorAll('textarea');
+textareas.forEach(textarea => {
+  autoResizeTextarea(textarea);
+  textarea.addEventListener('input', () => {
+    autoResizeTextarea(textarea);
+  });
+});
+</script>
+
+{% endblock%}

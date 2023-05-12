@@ -1,9 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from .forms import CustomCreateUser, CustomUserAuthenticateForm
-from django.contrib.auth import authenticate, login
 from django.contrib.auth import authenticate, login, logout
-
+from django.contrib.auth.models import Group, User
 
 def index(request):
     return render(request, 'UserRegistration/index.html')
@@ -25,7 +24,11 @@ class RegisterView(View):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
         if form.is_valid():
-            form.save()
+            t = form.save()
+            Group.objects.get(name='Smm').user_set.add(t)
+
+            user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password1'])
+            login(request, user)
             return redirect('MainOffice:base')
         return render(request, self.template_name, {'form': form})
 

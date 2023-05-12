@@ -70,7 +70,7 @@ class Sms(models.Model):
 
 class Task(models.Model):
     executor = models.ForeignKey(Account, models.DO_NOTHING, db_column='executor', related_name='executor')
-    сustomer = models.ForeignKey(Account, models.DO_NOTHING, db_column='сustomer', related_name='сustomer')
+    customer = models.ForeignKey(Account, models.DO_NOTHING, db_column='сustomer', related_name='сustomer')
     title = models.CharField(blank=False, null=False)
     text = models.CharField(blank=False, null=False)
     date_start = models.DateField(blank=True, null=True)
@@ -89,7 +89,7 @@ class Post(models.Model):
     photo = models.ImageField(upload_to='post', blank=True, null=True)
     date = models.DateTimeField()
 
-    date_of_completion = models.DateTimeField()
+    date_of_completion = models.DateTimeField(default=timezone.now)
 
     class Meta:
         managed = True

@@ -4,7 +4,7 @@ import openai
 import requests
 from django.core.files.temp import NamedTemporaryFile
 import time
-from .models import *
+from .models import Post
 import calendar
 import re
 
@@ -74,30 +74,42 @@ class Vk:
             with open(post.photo.path, 'rb') as f:
                 image_data = f.read()
 
-            response = self.vk.photos.getWallUploadServer(group_id=group_id).json()
+            response = self.vk.photos.getWallUploadServer(group_id=group_id)
 
-            upload_url = response['response']['upload_url']
+            upload_url = response['upload_url']
             response = requests.post(upload_url, files={'photo': ('image.jpg', image_data)}).json()
 
-            response = self.vk.photos.saveWallPhoto(group_id=group_id, server=response['server'], photo=response['photo'],
-                                                    hash=response['hash'])
-            return response
-        except Exception:
+            response = self.vk.photos.saveWallPhoto(group_id=group_id, server=response['server'],
+                                                    photo=response['photo'], hash=response['hash'])
+
+            return response[0]
+        except Exception as e:
             raise Exception('Нет возможности загрузить фото')
 
     # Создание поста на странице группы
     def create_post_for_group(self, post: Post) -> dict:
-        group_id = self.get_group_info(post.group.link)['id']
-        photo = self.get_photo_for_post(post, group_id)
-        message = post.text
-        response = self.vk.wall.post(owner_id=-group_id, message=message, from_group=1,
-                                     publish_date=int(time.mktime(post.date.timetuple())),
-                                     attachments=f'photo{photo["owner_id"]}_{photo["id"]}')
-        return response
+        try:
+            group_id = self.get_group_info(post.group.link)['id']
+            photo = self.get_photo_for_post(post, group_id)
+            message = post.text
+            response = self.vk.wall.post(owner_id=-group_id, message=message, from_group=1,
+                                         publish_date=int(time.mktime(post.date.timetuple())),
+                                         attachments=f'photo{photo["owner_id"]}_{photo["id"]}')
+            return response
+        except Exception as e:
+            raise e
 
 
-def week_pattern(num: int, data: dict):
-    with open('static/files/Wednesday.txt', 'r') as f:
+def week_pattern(num: int, data: dict) -> str:
+    if num == 1:
+        text = 'Monday.txt'
+    elif num == 3:
+        text = 'Wednesday.txt'
+    elif num == 5:
+        text = 'Friday.txt'
+    else:
+        text = 'Monday.txt'
+    with open('static/files/' + text, 'r') as f:
         content = f.read()
     for key, value in data.items():
         content = content.replace('{{ ' + key + ' }}', value)
@@ -105,71 +117,169 @@ def week_pattern(num: int, data: dict):
     return content
 
 
-def formation_Mail_data(link, name):
-    response = Vk().get_market_items(link, name)
-    # Получение парамет
-    prise_old = response[0]['price']['text']
-    name = response[0]['title']
-    compound, count = '', ''
-    temp = response[0]['description'].split("\n")
-    for id, part in enumerate(temp):
-        if part.find("Состав: ") > 0:
-            compound = part[part.find("Состав: ") + len('Состав: '):]
-            count = temp[id + 1][2:]
-            break
+class MailFormation:
+    def __init__(self):
+        self.days = dict()
+        name = ''
+        self.days['1'] = [[r'С (\d+) по (\d+) (\w+)',
+                           r'Промокод: (\d+)',
+                           r'(\w+\s\w+) за (\d+) рублей',
+                           r'Группа - (https?://\S+)'], 'Сформируй завлекающий, продающий заголовок для акции которая только что началась. Заголовок должен быть длиной не более чем 2 предложения.']
+        self.days['2'] = [[r'', r'',
+                           r'(\w+\s\w+) за (\d+) рублей',
+                           r'Группа - (https?://\S+)'], f'Сформируй завлекающий, продающий заголовок для того что бы преложить {name}. Заголовок должен быть длиной не более чем 2 предложения.']
+        self.days['3'] = [[r'С (\d+) по (\d+) (\w+)',
+                           r'Промокод: (\d+)',
+                           r'(\w+\s\w+) за (\d+) рублей',
+                           r'Группа - (https?://\S+)'], 'Сформируй завлекающий, продающий заголовок для акции которая заканчивается совсем скоро. Заголовок должен быть длиной не более чем 2 предложения.']
+        self.days['4'] = [[r'С (\d+) по (\d+) (\w+)',
+                           r'Промокод: (\d+)',
+                           r'(\w+\s\w+) за (\d+) рублей',
+                           r'Группа - (https?://\S+)'], 'Сформируй завлекающий, продающий заголовок который говорил бы о том что акция сгорает сегодня. Заголовок должен быть длиной не более чем 2 предложения.']
+        self.days['5'] = [[r'С (\d+) по (\d+) (\w+)',
+                           r'Промокод: (\d+)',
+                           r'(\w+\s\w+) в подарок!',
+                           r'Группа - (https?://\S+)'], 'Сформируй завлекающий, продающий заголовок для акции которая будет длится только в выходные. Заголовок должен быть длиной не более чем 2 предложения.']
+        self.days['6'] = [[r'', r'', r'', r''], '']
+        self.days['7'] = [[r'', r'', r'', r''], '']
 
-    res = {
-        'prise_old': prise_old,
-        'name': name,
-        'compound': compound,
-        'count': count,
-    }
-    return res
+    @staticmethod
+    def __replaceReg(text: list) -> str:
+        """
+        :param text: Текст для замены паттерна
+        :return: замененные значения паттерна
+        """
+        return '\n'.join(text).\
+               replace(r'\d+', '<em>день</em>').\
+               replace(r'\w+\s\w+', '<em>название ролла/пиццы</em>').\
+               replace(r'\w+', '<em>месяца</em>').\
+               replace(r'\S+', 'ссылка на группу').\
+               replace('\n', '<br>').\
+               replace('(', '').replace(')', '')
+
+    def isMatch(self, text: str, patternlist: list[str]) -> bool:
+        """
+        :param text: Текст который надо проверить.
+        :param patternlist: Регулярное выражение для проверки.
+        :return: Соответствие теста регулярному выражению.
+        """
+        for pattern in patternlist:
+            match = re.search(pattern, text)
+            if not match:
+                raise Exception('Не совпадение с шаблоном: <br>' + self.__replaceReg(patternlist))
+        return True
+
+    @staticmethod
+    def getFoodData(name: str, link: str) -> dict:
+        """
+        :param name: Название товара
+        :param link: ссылка на группу
+        :return: Словарь данных про товар
+        """
+        try:
+            response = Vk().get_market_items(link, name)
+            if len(response) == 0:
+                response = Vk().get_market_items(link, name[name.find(' ') + 1:])
+        except Exception as e:
+            raise e
+        if len(response) == 0:
+            raise Exception('Не удалось найти товар')
+        res = dict()
+        res['prise_old'] = response[0]['price']['text']
+        res['name'] = response[0]['title']
+
+        for index, part in enumerate(response[0]['description'].split("\n")):
+            if part.find("Состав: ") > 0:
+                res['compound'] = part[part.find("Состав: ") + len('Состав: '):]
+                res['count'] = response[0]['description'].split("\n")[index + 1][2:]
+                break
+        return res
+
+    def getMailData(self, day: int, text: str) -> dict:
+        """
+        :param day: Номер дня недели.
+        :param text: Текст который необходимо проверить по паттернам.
+        :return: словарь для заполнения шаблона.
+        """
+        try:
+            if self.isMatch(text, self.days[str(day)][0]):
+
+                res = dict()
+                days_pattern = self.days[str(day)][0]
+
+                if days_pattern[0] != days_pattern[1]:
+                    res['data'] = re.search(days_pattern[0], text).group(2) + ' ' + re.search(days_pattern[0],
+                                                                                              text).group(3)
+                    res['code'] = re.search(days_pattern[1], text).group(1)
+
+                res['name'] = re.search(days_pattern[2], text).group(1)
+                res['link'] = re.search(days_pattern[3], text).group(1)
+
+                if len(re.findall(days_pattern[2], text)) == 2:
+                    res['prise_new'] = re.search(days_pattern[2], text).group(2)
+                else:
+                    res['prise_new'] = ''
+
+                res['header'] = use_gpt(theme=self.days[str(day)][1].format(name=res['name']))
+
+                res.update(self.getFoodData(res['name'], res['link']))
+
+                return res
+        except Exception as e:
+            raise e
 
 
-def formation_Mail(text: str) -> dict:
-    """
-    :param text: текст для парсинга.
-    :return: Словарь с данными
-    """
-    data = code = name = prise_new = link = ''
+class PushFormation(MailFormation):
+    def __init__(self):
+        super().__init__()
+        self.pattern = [[r'Название: (\w+\s\w+)',
+                         r'Промокод: (\d+)',
+                         r'При покупке от: (\d+)',
+                         r'Группа - (https?://\S+)']]
 
-    patterns = [r'С \d+ по \d+ \w+',
-                r'Промокод: \d+',
-                r'\w+\s\w+ за \d+ рублей',
-                r'Группа - https?://\S+']
-    for pattern in patterns:
-        match = re.search(pattern, text)
-        if not match:
-            raise Exception('Не совпадение с шаблоном: <br>' +
-                            'С <em>день</em> по <em>день</em> <em>месяц</em><br> Промокод: <em>цифры</em> <br><em>Название</em> за <em>цена</em> рублей<br>Группа - <em>Ссылка</em>')
+        self.theme = 'Напиши push-уведомление которое говорит о "{name}", при заказе от {prise} рублей,' \
+                     ' при использовании промокода "{code}" сделай его живым и заманчивым и длиной не более 3' \
+                     ' предложений. Можешь так же использовать эту информацию {info}'
 
-    match = re.search(patterns[0], text).group()
-    data = match[match.find('по ') + len('по '):]
+    @staticmethod
+    def __replaceReg(text: list) -> str:
+        """
+        :param text: Текст для замены паттерна
+        :return: замененные значения паттерна
+        """
+        return '\n'.join(text).\
+               replace(r'\d+', '<em>цена/промокод</em>').\
+               replace(r'\w+\s\w+', '<em>название ролла/пиццы</em>').\
+               replace(r'\S+', 'ссылка на группу').\
+               replace('\n', '<br>').\
+               replace('(', '').replace(')', '')
 
-    match = re.search(patterns[1], text).group()
-    code = match[match.find('код: ') + len('код: '):]
+    def getPushData(self, text: str) -> dict:
+        """
+        :param text: Текст который необходимо проверить по паттернам.
+        :return: словарь для заполнения шаблона.
+        """
+        try:
+            if self.isMatch(text, self.pattern[0]):
 
-    match = re.search(patterns[2], text).group()
-    temp = match.split(' за ')
-    name, prise_new = temp[0], temp[1]
+                res = dict()
+                days_pattern = self.pattern[0]
 
-    match = re.search(patterns[3], text).group()
-    link = match[match.find(' - ') + len(' - '):]
+                res['name'] = re.search(days_pattern[0], text).group(1)
+                res['code'] = re.search(days_pattern[1], text).group(1)
+                res['prise_new'] = re.search(days_pattern[2], text).group(1)
+                res['link'] = re.search(days_pattern[3], text).group(1)
+                res['info'] = self.getFoodData(res['name'], res['link'])
 
-    response = formation_Mail_data(link, name)
-    theme = f'Сформируй завлекающий, продающий заголовок для акции которая заканчивается совсем скоро. Заголовок должен быть длиной не более чем 2 предложения.'
-    res = {
-        'code': code,
-        'data': data,
-        'name': name,
-        'count': response['count'],
-        'compound': response['compound'],
-        'prise_new': prise_new,
-        'prise_old': response['prise_old'],
-        'header': use_gpt(theme=theme),
-    }
-    return res
+                res['text'] = use_gpt(theme=self.theme.format(name=res['name'],
+                                                              code=res['code'],
+                                                              prise=res['prise_new'],
+                                                              info=res['info']
+                                                              ))
+
+                return res
+        except Exception as e:
+            raise e
 
 
 def use_gpt(theme: str, **kwargs) -> str:
@@ -213,7 +323,8 @@ class MyCalendar(calendar.HTMLCalendar):
         if day == 0:
             return '<td class="%s">&nbsp;</td>' % self.cssclass_noday
         else:
-            return f'<td class="{self.cssclasses[weekday]}"><button value="{day}" name="day" class="btn btn-light d-flex w-100 h-100">{day}</button></td>'
+            return f'<td class="{self.cssclasses[weekday]}"><button value="{day}"' \
+                   f' name="day" class="btn btn-light d-flex w-100 h-100">{day}</button></td>'
 
 
 def formation_statistic(data: list[dict], limits: tuple[int, int]) -> list:
@@ -236,5 +347,3 @@ def formation_statistic(data: list[dict], limits: tuple[int, int]) -> list:
                 res[el['week'].day] += 1
     res = [res[i] for i in range(limits[0], limits[1] + 1)]
     return res
-
-

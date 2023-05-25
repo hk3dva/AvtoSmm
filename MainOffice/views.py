@@ -262,7 +262,24 @@ def statistics(request):
 
 
 def push_generator(request):
-    return render(request, 'MainOffice/PushGenerator.html')
+    context = {
+        'title': 'Генератор push уведомлений',
+        'show': False,
+        'TextInForm': TextForm(),
+        'TextOutForm': TextForm(),
+        'Error': '',
+    }
+    if request.method == "POST":
+        form = TextForm(request.POST)
+        if form.is_valid():
+            try:
+                context['TextOutForm'].fields['text'].initial = PushFormation().getPushData(form.cleaned_data['text'])['text']
+                context['show'] = True
+
+            except Exception as e:
+                context.update({'Error': e})
+
+    return render(request, 'MainOffice/PushGenerator.html', context)
 
 
 def mailing_generator(request, *args, **kwargs):
@@ -279,8 +296,10 @@ def mailing_generator(request, *args, **kwargs):
         form = TextForm(request.POST)
         if form.is_valid():
             try:
-                context['TextOutForm'].fields['text'].initial = week_pattern(3, formation_Mail(form.cleaned_data['text']))
+                context['TextOutForm'].fields['text'].initial = week_pattern(int(request.GET.get('day', '')),
+                                MailFormation().getMailData(int(request.GET.get('day', '')), form.cleaned_data['text']))
                 context['show'] = True
+
             except Exception as e:
                 context.update({'Error': e})
 
